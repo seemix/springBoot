@@ -6,6 +6,7 @@ import com.springboot.models.CustomerDTO;
 import com.springboot.models.views.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.springboot.services.CustomerService;
+import com.springboot.services.MailService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -21,6 +22,8 @@ public class CustomerController {
     private CustomerDAO customerDAO;
     private CustomerService customerService;
 
+    private MailService mailService;
+
     @GetMapping("")
     @JsonView(Views.Client.class)
     public ResponseEntity<List<Customer>> getCustomers() {
@@ -32,6 +35,7 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody Customer customer) {
         customerService.save(customer);
+        mailService.send(customer);
     }
 
     @GetMapping("/{id}")
@@ -39,6 +43,7 @@ public class CustomerController {
     public ResponseEntity<Customer> getCustomer(@PathVariable int id) {
         Customer customer = customerDAO.findById(id).get();
         return new ResponseEntity<>(customer, HttpStatusCode.valueOf(200));
+
     }
 
     @DeleteMapping("/{id}")
@@ -54,5 +59,12 @@ public class CustomerController {
     @GetMapping("/name/{name}")
     public ResponseEntity<List<Customer>> getCustomersByName(@PathVariable String name) {
         return new ResponseEntity<>(customerDAO.getByName(name), HttpStatusCode.valueOf(200));
+    }
+
+    @GetMapping("/activate/{id}")
+    public void activateCustomer(@PathVariable int id) {
+        Customer customer = customerService.getCustomerById(id);
+        customer.setActivated(true);
+        customerService.updateCustomerActivation(customer);
     }
 }

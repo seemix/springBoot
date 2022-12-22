@@ -39,6 +39,8 @@ public class Customer {
     @Email(message = "Email is not valid")
     private String email;
 
+    private boolean isActivated = false;
+
     public Customer(String name) {
         this.name = name;
     }

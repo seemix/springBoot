@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 public class CustomerService {
     private CustomerDAO customerDAO;
 
+//    private MailService mailService;
+
     public void save(Customer customer) {
         customerDAO.save(customer);
     }
@@ -31,7 +33,14 @@ public class CustomerService {
         } else {
             throw new RuntimeException();
         }
+    }
 
+    public Customer getCustomerById(int id) {
+        return customerDAO.findById(id).get();
+    }
+
+    public void updateCustomerActivation(Customer customer) {
+        customerDAO.save(customer);
     }
 }
 
